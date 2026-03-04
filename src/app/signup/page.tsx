@@ -21,6 +21,8 @@ function SignupForm() {
     const [selectedState, setSelectedState] = useState('')
     const [selectedLga, setSelectedLga] = useState('')
     const [selectedWard, setSelectedWard] = useState('')
+    const [age, setAge] = useState<number>(0)
+    const [isRegisteredVoter, setIsRegisteredVoter] = useState<boolean | null>(null)
 
     const [isLoading, setIsLoading] = useState(false)
 
@@ -68,9 +70,21 @@ function SignupForm() {
 
             <form action={signup} className="space-y-6" onSubmit={() => setIsLoading(true)}>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    {/* Basic Info */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                         <input name="full_name" type="text" required className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-green-500" placeholder="John Doe" />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input
+                            name="email"
+                            type="email"
+                            required
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-green-500"
+                            placeholder="john@example.com"
+                        />
                     </div>
 
                     <div>
@@ -83,17 +97,13 @@ function SignupForm() {
                         <input name="password" type="password" required className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-green-500" placeholder="Minimum 6 characters" />
                     </div>
 
+                    {/* Location Selection */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
                         <select name="state_id" required value={selectedState} onChange={(e) => setSelectedState(e.target.value)} className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-green-500 bg-white">
                             <option value="" disabled>{states.length > 0 ? 'Select State' : 'No states found (Seed DB)'}</option>
                             {states.map((st) => <option key={st.id} value={st.id}>{st.name}</option>)}
                         </select>
-                        {states.length === 0 && (
-                            <p className="mt-1 text-xs text-red-500">
-                                Location data is missing. Please run the seeder script.
-                            </p>
-                        )}
                     </div>
 
                     <div>
@@ -113,18 +123,120 @@ function SignupForm() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Polling Unit</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Base Polling Unit</label>
                         <select name="polling_unit_id" required disabled={!selectedWard} className="w-full disabled:bg-gray-100 rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-green-500 bg-white">
                             <option value="" disabled>Select Polling Unit</option>
                             {pollingUnits.map((pu) => <option key={pu.id} value={pu.id}>{pu.code ? `${pu.code} - ` : ''}{pu.name}</option>)}
                         </select>
                     </div>
+
+                    {/* Eligibility & Voter Status */}
+                    <div className="sm:col-span-2 border-t pt-4 mt-2">
+                        <label className="block text-sm font-bold text-gray-900 mb-1">Eligibility & Voter Intelligence</label>
+                    </div>
+
+                    <div className="sm:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">How old are you?</label>
+                        <input
+                            name="age"
+                            type="number"
+                            required
+                            min="1"
+                            max="120"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-green-500"
+                            placeholder="Your current age"
+                            onChange={(e) => setAge(parseInt(e.target.value) || 0)}
+                        />
+                    </div>
+
+                    {age >= 18 ? (
+                        <>
+                            <div className="sm:col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Are you a registered voter?</label>
+                                <div className="space-x-4 flex items-center">
+                                    <label className="flex items-center cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="is_registered_voter"
+                                            value="true"
+                                            required
+                                            className="mr-2 h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
+                                            onChange={() => setIsRegisteredVoter(true)}
+                                        />
+                                        <span className="text-sm">Yes</span>
+                                    </label>
+                                    <label className="flex items-center cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="is_registered_voter"
+                                            value="false"
+                                            required
+                                            className="mr-2 h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
+                                            onChange={() => setIsRegisteredVoter(false)}
+                                        />
+                                        <span className="text-sm">No</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            {isRegisteredVoter === true && (
+                                <div className="sm:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Enter your current polling unit location</label>
+                                    <select
+                                        name="registered_polling_unit_id"
+                                        required
+                                        disabled={!selectedWard}
+                                        className="w-full disabled:bg-gray-100 rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-green-500 bg-white"
+                                    >
+                                        <option value="" disabled>Select Registered Polling Unit</option>
+                                        {pollingUnits.map((pu) => <option key={pu.id} value={pu.id}>{pu.code ? `${pu.code} - ` : ''}{pu.name}</option>)}
+                                    </select>
+                                </div>
+                            )}
+
+                            {isRegisteredVoter === false && (
+                                <>
+                                    <div className="sm:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Select the polling unit you wish to vote in</label>
+                                        <select
+                                            name="intended_polling_unit_id"
+                                            required
+                                            disabled={!selectedWard}
+                                            className="w-full disabled:bg-gray-100 rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-green-500 bg-white"
+                                        >
+                                            <option value="" disabled>Select Intended Polling Unit</option>
+                                            {pollingUnits.map((pu) => <option key={pu.id} value={pu.id}>{pu.code ? `${pu.code} - ` : ''}{pu.name}</option>)}
+                                        </select>
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Do you need help registering as a voter?</label>
+                                        <div className="space-x-4 flex items-center">
+                                            <label className="flex items-center cursor-pointer">
+                                                <input type="radio" name="needs_registration_help" value="true" required className="mr-2 h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500" />
+                                                <span className="text-sm">Yes</span>
+                                            </label>
+                                            <label className="flex items-center cursor-pointer">
+                                                <input type="radio" name="needs_registration_help" value="false" required className="mr-2 h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500" />
+                                                <span className="text-sm">No</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </>
+                    ) : age > 0 ? (
+                        <div className="sm:col-span-2 bg-blue-50 p-4 rounded-md border border-blue-200">
+                            <p className="text-sm text-blue-800">
+                                <strong>Note:</strong> You will be eligible to register when you turn 18.
+                            </p>
+                        </div>
+                    ) : null}
                 </div>
 
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full flex justify-center py-3 px-4 mt-6 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:bg-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition"
+                    className="w-full flex justify-center py-3 px-4 mt-6 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:bg-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition shadow-sm"
                 >
                     {isLoading ? 'Registering...' : 'Sign Up'}
                 </button>

@@ -42,13 +42,13 @@ export default async function Login({
 
                     <div className="space-y-4 rounded-md shadow-sm">
                         <div>
-                            <label htmlFor="phone" className="sr-only">Phone Number</label>
+                            <label htmlFor="identifier" className="sr-only">Email or Phone Number</label>
                             <input
-                                name="phone"
-                                type="tel"
+                                name="identifier"
+                                type="text"
                                 required
                                 className="appearance-none rounded-md rounded-t-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                                placeholder="Phone Number (e.g., 08012345678)"
+                                placeholder="Email or Phone Number"
                             />
                         </div>
                         <div>
@@ -60,6 +60,14 @@ export default async function Login({
                                 className="appearance-none rounded-md rounded-b-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
                                 placeholder="Password"
                             />
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-end">
+                        <div className="text-sm">
+                            <Link href="/forgot-password" size="sm" className="font-medium text-green-600 hover:text-green-500">
+                                Forgot your password?
+                            </Link>
                         </div>
                     </div>
 
