@@ -30,9 +30,10 @@ export default async function DashboardPage() {
     if (profileError || !profile) {
         // If user deleted from public.users somehow or error formatting
         return (
-            <div className="min-h-screen flex items-center justify-center p-4">
-                <p>Error loading profile. Contact administrator.</p>
-                <form action={logout}><button className="ml-4 underline text-green-600">Logout</button></form>
+            <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                <p className="text-red-600 font-bold mb-2">Error loading profile</p>
+                <p className="text-sm text-gray-600 mb-4">{profileError ? profileError.message : 'Profile record not found.'}</p>
+                <form action={logout}><button className="underline text-green-600">Logout & Try again</button></form>
             </div>
         )
     }
