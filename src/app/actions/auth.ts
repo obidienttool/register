@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
 // Helper to convert phone to a dummy email for Supabase Auth since we aren't using SMS yet
@@ -101,7 +101,8 @@ export async function signup(formData: FormData) {
 
     // Insert into public.users
     if (data.user) {
-        const { error: dbError } = await supabase.from('users').insert({
+        const adminSupabase = await createAdminClient()
+        const { error: dbError } = await adminSupabase.from('users').insert({
             id: data.user.id,
             full_name: fullName,
             phone: phone,
