@@ -22,7 +22,7 @@ export default async function DashboardPage() {
       lga:lgas(name),
       ward:wards(name),
       polling_unit:polling_units!polling_unit_id(name, code),
-      pu_team:pu_team_members(role_title)
+      pu_team:pu_team_members!user_id(role_title)
     `)
         .eq('id', user.id)
         .single()
