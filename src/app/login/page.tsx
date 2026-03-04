@@ -65,7 +65,7 @@ export default async function Login({
 
                     <div className="flex items-center justify-end">
                         <div className="text-sm">
-                            <Link href="/forgot-password" size="sm" className="font-medium text-green-600 hover:text-green-500">
+                            <Link href="/forgot-password" title="Forgot Password" className="font-medium text-green-600 hover:text-green-500">
                                 Forgot your password?
                             </Link>
                         </div>
