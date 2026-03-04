@@ -4,7 +4,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
 // Helper to convert phone to a dummy email for Supabase Auth since we aren't using SMS yet
-const getEmailFromPhone = (phone: string) => `${phone}@register.local`
+const getEmailFromPhone = (phone: string) => `${phone}@register-obidient.com`
 
 export async function login(formData: FormData) {
     const phone = formData.get('phone') as string
