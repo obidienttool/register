@@ -48,8 +48,7 @@ export async function signup(formData: FormData) {
     const age = parseInt(formData.get('age') as string)
     const isRegisteredVoter = formData.get('is_registered_voter') === 'true'
     const needsRegistrationHelp = formData.get('needs_registration_help') === 'true'
-    const registeredPUId = formData.get('registered_polling_unit_id') as string
-    const intendedPUId = formData.get('intended_polling_unit_id') as string
+    const pollingUnitId = formData.get('polling_unit_id') as string
 
     // Server-side Validation
     const isUnder18 = age < 18
@@ -68,23 +67,21 @@ export async function signup(formData: FormData) {
         return redirect(`/signup?message=${encodeURIComponent(`${field} is already registered.`)}`)
     }
 
-    if (isUnder18) {
-        // Minors cannot have polling units
-        if (registeredPUId || intendedPUId) {
-            return redirect(`/signup?message=${encodeURIComponent('Underage members cannot select polling units.')}`)
+    // Logic-driven PU mapping
+    let registeredPUId: number | null = null
+    let intendedPUId: number | null = null
+
+    if (!isUnder18) {
+        if (isRegisteredVoter) {
+            registeredPUId = parseInt(pollingUnitId)
+        } else {
+            intendedPUId = parseInt(pollingUnitId)
         }
-    } else {
-        // Adults must have exactly one PU based on voter status
-        if (isRegisteredVoter && !registeredPUId) {
-            return redirect(`/signup?message=${encodeURIComponent('Please select your registered polling unit.')}`)
-        }
-        if (!isRegisteredVoter && !intendedPUId) {
-            return redirect(`/signup?message=${encodeURIComponent('Please select your intended polling unit.')}`)
-        }
-        // Exclusivity check
-        if (registeredPUId && intendedPUId) {
-            return redirect(`/signup?message=${encodeURIComponent('Invalid polling unit selection.')}`)
-        }
+    }
+
+    // Adult validation
+    if (!isUnder18 && !pollingUnitId) {
+        return redirect(`/signup?message=${encodeURIComponent('Please select a polling unit.')}`)
     }
 
     // Sign up using real email
@@ -113,15 +110,15 @@ export async function signup(formData: FormData) {
             state_id: parseInt(stateId),
             lga_id: parseInt(lgaId),
             ward_id: parseInt(wardId),
-            polling_unit_id: parseInt(pollingUnitId), // Primary location
+            polling_unit_id: parseInt(pollingUnitId), // Primary location reference
 
-            // Phase 8 Data
+            // Phase 8 & 10 Data
             age: age,
             is_under_18: isUnder18,
             is_registered_voter: isUnder18 ? false : isRegisteredVoter,
             needs_registration_help: isUnder18 ? false : needsRegistrationHelp,
-            registered_polling_unit_id: registeredPUId ? parseInt(registeredPUId) : null,
-            intended_polling_unit_id: intendedPUId ? parseInt(intendedPUId) : null,
+            registered_polling_unit_id: registeredPUId,
+            intended_polling_unit_id: intendedPUId,
 
             role: 'MEMBER',
             verified: false,
