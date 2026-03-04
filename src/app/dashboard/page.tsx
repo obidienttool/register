@@ -21,7 +21,7 @@ export default async function DashboardPage() {
       state:states(name),
       lga:lgas(name),
       ward:wards(name),
-      polling_unit:polling_units(name, code),
+      polling_unit:polling_units!polling_unit_id(name, code),
       pu_team:pu_team_members(role_title)
     `)
         .eq('id', user.id)
