@@ -48,7 +48,6 @@ export async function signup(formData: FormData) {
     const age = parseInt(formData.get('age') as string)
     const isRegisteredVoter = formData.get('is_registered_voter') === 'true'
     const needsRegistrationHelp = formData.get('needs_registration_help') === 'true'
-    const pollingUnitId = formData.get('polling_unit_id') as string
 
     // Server-side Validation
     const isUnder18 = age < 18
