@@ -13,22 +13,14 @@ export default async function DashboardPage() {
         redirect('/login')
     }
 
-    // Fetch full profile, joined location names, and team status
+    // 1. Fetch Basic Profile
     const { data: profile, error: profileError } = await supabase
         .from('users')
-        .select(`
-      *,
-      state:states(name),
-      lga:lgas(name),
-      ward:wards(name),
-      polling_unit:polling_units!polling_unit_id(name, code),
-      pu_team:pu_team_members!user_id(role_title)
-    `)
+        .select(`*`)
         .eq('id', user.id)
         .single()
 
     if (profileError || !profile) {
-        // If user deleted from public.users somehow or error formatting
         return (
             <div className="min-h-screen flex flex-col items-center justify-center p-4">
                 <p className="text-red-600 font-bold mb-2">Error loading profile</p>
@@ -38,12 +30,22 @@ export default async function DashboardPage() {
         )
     }
 
-    const userState = (profile.state as any)?.name || 'N/A'
-    const userLga = (profile.lga as any)?.name || 'N/A'
-    const userWard = (profile.ward as any)?.name || 'N/A'
-    const puName = (profile.polling_unit as any)?.name || 'N/A'
-    const puCode = (profile.polling_unit as any)?.code || ''
+    // 2. Fetch specialized data separately to avoid ambiguous join errors
+    const [stateRes, lgaRes, wardRes, puRes, teamRes] = await Promise.all([
+        profile.state_id ? supabase.from('states').select('name').eq('id', profile.state_id).single() : { data: null },
+        profile.lga_id ? supabase.from('lgas').select('name').eq('id', profile.lga_id).single() : { data: null },
+        profile.ward_id ? supabase.from('wards').select('name').eq('id', profile.ward_id).single() : { data: null },
+        profile.polling_unit_id ? supabase.from('polling_units').select('name, code').eq('id', profile.polling_unit_id).single() : { data: null },
+        supabase.from('pu_team_members').select('role_title').eq('user_id', profile.id).single()
+    ])
+
+    const userState = stateRes.data?.name || 'N/A'
+    const userLga = lgaRes.data?.name || 'N/A'
+    const userWard = wardRes.data?.name || 'N/A'
+    const puName = puRes.data?.name || 'N/A'
+    const puCode = puRes.data?.code || ''
     const displayPu = puCode ? `${puCode} - ${puName}` : puName
+    const puTeamRole = teamRes.data?.role_title || null
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -110,12 +112,12 @@ export default async function DashboardPage() {
                                 </div>
                             )}
 
-                            {profile.pu_team && profile.pu_team.length > 0 && (
+                            {puTeamRole && (
                                 <div className="bg-blue-50 border border-blue-200 p-4 rounded-md mt-4">
                                     <p className="text-sm text-blue-800 mb-1 flex items-center gap-1 font-semibold uppercase tracking-wider">
                                         <Shield className="w-4 h-4 text-blue-800" /> Polling Unit Team Member
                                     </p>
-                                    <p className="font-bold text-blue-900 text-lg">{profile.pu_team[0].role_title}</p>
+                                    <p className="font-bold text-blue-900 text-lg">{puTeamRole}</p>
                                 </div>
                             )}
                         </div>
