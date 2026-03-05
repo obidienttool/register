@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
+import OpenAI from 'openai'
 
 // Prevent client-side leaks and ensure it strictly runs on edge/server.
 export async function analyzeNetworkMetrics(metrics: any) {
