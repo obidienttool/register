@@ -68,8 +68,8 @@ export async function buildScopedMembersQuery(supabase: any, filters?: MemberFil
         state:states(name),
         lga:lgas(name),
         ward:wards(name),
-        polling_unit:polling_units(name, code),
-        pu_team:pu_team_members${joinPuTeam}(role_title)
+        polling_unit:polling_units!polling_unit_id(name, code),
+        pu_team:pu_team_members!user_id${joinPuTeam}(role_title)
     `)
 
     // Apply RBAC filters
