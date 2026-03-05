@@ -1,11 +1,22 @@
-import OpenAI from 'openai'
+import { createClient } from '@/utils/supabase/server'
 
 // Prevent client-side leaks and ensure it strictly runs on edge/server.
 export async function analyzeNetworkMetrics(metrics: any) {
-    const provider = (process.env.AI_PROVIDER || 'openai').toLowerCase()
-    const apiKey = provider === 'grok' ? process.env.XAI_API_KEY : process.env.OPENAI_API_KEY
+    const supabase = await createClient()
+
+    // Fetch dynamic config from DB
+    const { data: settings } = await supabase.from('app_settings').select('id, value')
+    const config = Object.fromEntries(settings?.map(s => [s.id, s.value]) || [])
+
+    const provider = (config.ai_provider || process.env.AI_PROVIDER || 'openai').toLowerCase()
+    const apiKey = provider === 'grok'
+        ? (config.xai_api_key || process.env.XAI_API_KEY)
+        : (config.openai_api_key || process.env.OPENAI_API_KEY)
+
     const baseURL = provider === 'grok' ? 'https://api.x.ai/v1' : undefined
-    const model = provider === 'grok' ? 'grok-beta' : 'gpt-4o-mini'
+    const model = provider === 'grok'
+        ? (config.grok_model || 'grok-beta')
+        : (config.openai_model || 'gpt-4o-mini')
 
     if (!apiKey) {
         console.warn(`${provider.toUpperCase()} API key not found. Implementing mocked intelligence layer.`)
@@ -13,14 +24,14 @@ export async function analyzeNetworkMetrics(metrics: any) {
             strengths: ["Local data suggests increasing verified rates across 3 major LGAs.", "Primary ward structures remain active."],
             weaknesses: ["Missing API key to generate deep algorithmic correlations.", "Several LGAs remain beneath 20% verification density."],
             risk_alerts: ["Unauthenticated coordinators risk network spam."],
-            recommended_actions: [`Install ${provider.toUpperCase()} API key inside dashboard environment.`, "Dispatch mobilization SMS to weak LGAs."],
+            recommended_actions: [`Install ${provider.toUpperCase()} API key inside dashboard environment or Admin Settings.`, "Dispatch mobilization SMS to weak LGAs."],
             suggested_sms_copy: "URGENT: Ensure all regional team members finalize verification today. Log into your dashboard."
         }
     }
 
     const openai = new OpenAI({ apiKey, baseURL })
 
-    const systemPrompt = `You are a High-Level Strategic Intelligence Advisor for a regional political mobilization network.
+    const systemPrompt = config.ai_system_instructions || `You are a High-Level Strategic Intelligence Advisor for a regional political mobilization network.
 You will be provided with aggregated structural metrics mapping member verifications, geographic densities, polling unit structures, and SMS activity.
 Please analyze the data and return an intelligent operational report in strictly valid JSON format exactly matching the following schema:
 

@@ -52,7 +52,7 @@ export default async function AdminMembersPage() {
                                 </Link>
                                 <span className="text-gray-300">|</span>
                                 <Link href="/admin/settings" className="text-red-500 hover:text-red-700 flex items-center gap-1 transition">
-                                    Root Settings
+                                    <Cog className="w-4 h-4" /> Root Settings
                                 </Link>
                                 <span className="text-gray-300">|</span>
                             </>
