@@ -53,12 +53,13 @@ export type MemberFilters = {
     puTeamMember?: string; // 'yes' | 'no' | ''
 }
 
-export async function buildScopedMembersQuery(supabase: any, filters?: MemberFilters) {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return { query: null }
-
-    const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
-    if (!profile) return { query: null }
+/**
+ * Note: This must return a raw PostgREST query builder.
+ * If this were async AND returned the query, 'await'ing it would trigger the query immediately.
+ * We split it: get the profile first, then build.
+ */
+export function buildScopedMembersQuery(supabase: any, profile: any, filters?: MemberFilters) {
+    if (!profile) return null
 
     // Determine if we need an inner join for pu_team_members (only when filtering for 'yes')
     const joinPuTeam = filters?.puTeamMember === 'yes' ? '!inner' : ''
@@ -80,7 +81,7 @@ export async function buildScopedMembersQuery(supabase: any, filters?: MemberFil
     } else if (profile.role === 'STATE_COORDINATOR') {
         query.eq('state_id', profile.state_id)
     } else if (profile.role !== 'ADMIN') {
-        return { query: null } // Unauthorized
+        return null // Unauthorized
     }
 
     // Apply Location filters
@@ -94,13 +95,19 @@ export async function buildScopedMembersQuery(supabase: any, filters?: MemberFil
     if (filters?.verified === 'yes') query.eq('verified', true)
     if (filters?.verified === 'no') query.eq('verified', false)
 
-    return { query }
+    return query
 }
 
 export async function getScopedMembers(filters?: MemberFilters) {
     try {
         const supabase = await createClient()
-        const { query } = await buildScopedMembersQuery(supabase, filters)
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return { data: [] }
+
+        const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
+        if (!profile) return { data: [] }
+
+        const query = buildScopedMembersQuery(supabase, profile, filters)
         if (!query) return { data: [] }
 
         // Pagination/Limit for view
@@ -128,7 +135,13 @@ import * as XLSX from 'xlsx'
 
 export async function exportMembersAction(filters?: MemberFilters, format: 'csv' | 'xlsx' = 'xlsx') {
     const supabase = await createClient()
-    const { query } = await buildScopedMembersQuery(supabase, filters)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: 'Unauthorized' }
+
+    const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
+    if (!profile) return { success: false, error: 'Unauthorized' }
+
+    const query = buildScopedMembersQuery(supabase, profile, filters)
     if (!query) return { success: false, error: 'Unauthorized' }
 
     // Export query has NO limit to export all matching results
