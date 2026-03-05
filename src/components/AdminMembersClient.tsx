@@ -112,6 +112,7 @@ export default function AdminMembersClient({ callerRole }: { callerRole: string 
                 ...(filterRole ? { role: filterRole } : {}),
                 ...(filterVerified ? { verified: filterVerified } : {}),
                 ...(filterPuTeam ? { puTeamMember: filterPuTeam } : {}),
+                ...(searchQuery ? { search: searchQuery } : {}),
             }
             const res = await exportMembersAction(filters, format)
             if (res.success && res.fileData) {
