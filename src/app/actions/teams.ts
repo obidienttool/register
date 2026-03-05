@@ -29,7 +29,7 @@ export async function getPollingUnitDetails(puId: number) {
 export async function getTeamMembers(puId: number) {
     const supabase = await createClient()
     const { data, error } = await supabase.from('pu_team_members')
-        .select('*, user:users(id, full_name, phone, membership_number)')
+        .select('*, user:users!user_id(id, full_name, phone, membership_number)')
         .eq('polling_unit_id', puId)
         .order('created_at', { ascending: true })
 

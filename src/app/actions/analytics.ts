@@ -32,7 +32,7 @@ export async function getAnalyticsSummary() {
 
     // For PU Team Members, query pu_team_members joining users to apply scope correctly
     // Since Supabase views are better for exact counts with joins, we will just fetch the counts matching our location scope
-    let puQuery = supabase.from('users').select('id, pu_team:pu_team_members!inner(id)')
+    let puQuery = supabase.from('users').select('id, pu_team:pu_team_members!user_id!inner(id)')
     if (profile.role === 'WARD_COORDINATOR') puQuery = puQuery.eq('ward_id', profile.ward_id)
     if (profile.role === 'LGA_COORDINATOR') puQuery = puQuery.eq('lga_id', profile.lga_id)
     if (profile.role === 'STATE_COORDINATOR') puQuery = puQuery.eq('state_id', profile.state_id)
