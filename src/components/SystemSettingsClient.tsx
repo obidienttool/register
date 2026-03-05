@@ -30,6 +30,7 @@ export default function SystemSettingsClient({ initialSettings }: { initialSetti
     const categories = {
         ai_providers: settings.filter(s => s.id.includes('provider') || s.id.includes('model')),
         ai_instructions: settings.filter(s => s.id.includes('instructions')),
+        coordinator_visibility: settings.filter(s => s.id.includes('coordinator_info')),
         api_keys: settings.filter(s => s.is_secret)
     }
 
@@ -99,6 +100,39 @@ export default function SystemSettingsClient({ initialSettings }: { initialSetti
 
     return (
         <div className="space-y-8">
+            {/* Coordinator Visibility Settings */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
+                    <User className="w-5 h-5 text-indigo-600" />
+                    <h3 className="font-bold text-gray-900">Member Dashboard Visibility</h3>
+                </div>
+                <div className="divide-y divide-gray-100">
+                    {categories.coordinator_visibility.map(s => (
+                        <div key={s.id} className="p-6 hover:bg-gray-50 transition border-b border-gray-100 last:border-0">
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-xs font-mono font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-100">
+                                            {s.id}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-gray-900 font-medium mb-1">{s.description}</p>
+                                </div>
+                                <div className="flex items-center">
+                                    <button
+                                        onClick={() => handleUpdate(s.id, s.value === 'true' ? 'false' : 'true')}
+                                        disabled={isPending}
+                                        className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 ${s.value === 'true' ? 'bg-indigo-600' : 'bg-gray-200'}`}
+                                    >
+                                        <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${s.value === 'true' ? 'translate-x-5' : 'translate-x-0'}`}></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
             {/* AI Core Config */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
