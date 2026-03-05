@@ -2,19 +2,23 @@ import OpenAI from 'openai'
 
 // Prevent client-side leaks and ensure it strictly runs on edge/server.
 export async function analyzeNetworkMetrics(metrics: any) {
-    const apiKey = process.env.OPENAI_API_KEY
+    const provider = (process.env.AI_PROVIDER || 'openai').toLowerCase()
+    const apiKey = provider === 'grok' ? process.env.XAI_API_KEY : process.env.OPENAI_API_KEY
+    const baseURL = provider === 'grok' ? 'https://api.x.ai/v1' : undefined
+    const model = provider === 'grok' ? 'grok-beta' : 'gpt-4o-mini'
+
     if (!apiKey) {
-        console.warn('OPENAI_API_KEY not found. Implementing mocked intelligence layer.')
+        console.warn(`${provider.toUpperCase()} API key not found. Implementing mocked intelligence layer.`)
         return {
             strengths: ["Local data suggests increasing verified rates across 3 major LGAs.", "Primary ward structures remain active."],
             weaknesses: ["Missing API key to generate deep algorithmic correlations.", "Several LGAs remain beneath 20% verification density."],
             risk_alerts: ["Unauthenticated coordinators risk network spam."],
-            recommended_actions: ["Install OPENAI_API_KEY inside dashboard environment.", "Dispatch mobilization SMS to weak LGAs."],
+            recommended_actions: [`Install ${provider.toUpperCase()} API key inside dashboard environment.`, "Dispatch mobilization SMS to weak LGAs."],
             suggested_sms_copy: "URGENT: Ensure all regional team members finalize verification today. Log into your dashboard."
         }
     }
 
-    const openai = new OpenAI({ apiKey })
+    const openai = new OpenAI({ apiKey, baseURL })
 
     const systemPrompt = `You are a High-Level Strategic Intelligence Advisor for a regional political mobilization network.
 You will be provided with aggregated structural metrics mapping member verifications, geographic densities, polling unit structures, and SMS activity.
@@ -30,7 +34,7 @@ Please analyze the data and return an intelligent operational report in strictly
 
     try {
         const response = await openai.chat.completions.create({
-            model: "gpt-4o-mini", // Cost efficient robust model
+            model: model,
             messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: JSON.stringify(metrics, null, 2) }
@@ -43,7 +47,7 @@ Please analyze the data and return an intelligent operational report in strictly
 
         return JSON.parse(content)
     } catch (e: any) {
-        console.error('OpenAI Initialization Error:', e.message)
-        throw new Error('Intelligence Engine failed to analyze metrics: ' + e.message)
+        console.error(`${provider.toUpperCase()} Initialization Error:`, e.message)
+        throw new Error(`Intelligence Engine (${provider}) failed to analyze metrics: ` + e.message)
     }
 }

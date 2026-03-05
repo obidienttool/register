@@ -187,3 +187,56 @@ export async function exportMembersAction(filters?: MemberFilters, format: 'csv'
         fileName: `Obidient_Members_Export.${extension}`
     }
 }
+export async function getStaffMembers() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+
+    const { data: profile } = await supabase.from('users').select('role').eq('id', user.id).single()
+    if (profile?.role !== 'ADMIN') return []
+
+    const { data, error } = await supabase
+        .from('users')
+        .select(`
+            *,
+            state:states(name),
+            lga:lgas(name),
+            ward:wards(name)
+        `)
+        .neq('role', 'MEMBER')
+        .order('full_name', { ascending: true })
+
+    if (error) {
+        console.error("Error fetching staff:", error)
+        return []
+    }
+
+    return data
+}
+
+export async function updateStaffAction(targetUserId: string, updates: { role?: string, stateId?: number | null, lgaId?: number | null, wardId?: number | null }) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: 'Unauthorized' }
+
+    const { data: profile } = await supabase.from('users').select('role').eq('id', user.id).single()
+    if (profile?.role !== 'ADMIN') return { success: false, error: 'Forbidden' }
+
+    const { error } = await supabase
+        .from('users')
+        .update({
+            ...(updates.role ? { role: updates.role } : {}),
+            state_id: updates.stateId,
+            lga_id: updates.lgaId,
+            ward_id: updates.wardId
+        })
+        .eq('id', targetUserId)
+
+    if (error) {
+        return { success: false, error: error.message }
+    }
+
+    revalidatePath('/admin/manager')
+    revalidatePath('/admin/members')
+    return { success: true }
+}

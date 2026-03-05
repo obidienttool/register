@@ -40,20 +40,30 @@ export default async function AdminMembersPage() {
                             <Users className="w-6 h-6" /> Members Administration
                         </h1>
                     </div>
-                    <div className="text-sm rounded hover:bg-gray-100 px-3 py-1 font-medium border text-gray-700 flex items-center gap-3">
+                    <div className="flex items-center gap-4 text-sm font-medium">
                         {profile.role === 'ADMIN' && (
                             <>
-                                <Link href="/admin/intelligence" className="text-purple-600 font-bold hover:underline flex items-center gap-1"><Cpu className="w-4 h-4" />Strategy AI</Link>
+                                <Link href="/admin/intelligence" className="text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition">
+                                    <Cpu className="w-4 h-4" /> Strategy AI
+                                </Link>
                                 <span className="text-gray-300">|</span>
-                                <Link href="/admin/settings" className="text-red-600 font-bold hover:underline">Root Settings</Link>
+                                <Link href="/admin/manager" className="text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition">
+                                    <Shield className="w-4 h-4" /> Staff
+                                </Link>
+                                <span className="text-gray-300">|</span>
+                                <Link href="/admin/settings" className="text-red-500 hover:text-red-700 flex items-center gap-1 transition">
+                                    Root Settings
+                                </Link>
                                 <span className="text-gray-300">|</span>
                             </>
                         )}
-                        <Link href="/admin/sms" className="text-blue-600 hover:underline">SMS Operations</Link>
+                        <Link href="/admin/polling-units" className="text-green-700 hover:text-green-900 flex items-center gap-1 transition">
+                            <Users className="w-4 h-4" /> PU Teams
+                        </Link>
                         <span className="text-gray-300">|</span>
-                        <Link href="/admin/analytics" className="text-blue-600 hover:underline">View Analytics</Link>
+                        <Link href="/admin/analytics" className="text-blue-600 hover:text-blue-800 transition">Analytics</Link>
                         <span className="text-gray-300">|</span>
-                        Active Persona: {profile.role}
+                        <Link href="/admin/sms" className="text-blue-600 hover:text-blue-800 transition">SMS</Link>
                     </div>
                 </div>
             </header>
