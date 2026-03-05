@@ -81,8 +81,16 @@ export default function AdminMembersClient({ callerRole }: { callerRole: string 
                 ...(filterVerified ? { verified: filterVerified } : {}),
                 ...(filterPuTeam ? { puTeamMember: filterPuTeam } : {}),
             }
-            const data = await getScopedMembers(filters)
-            setMembers(data || [])
+            const res = await getScopedMembers(filters)
+            if (res && 'error' in res && res.error) {
+                setActionError(`Query Error: ${res.error}`)
+                setMembers([])
+            } else {
+                setMembers((res as any).data || [])
+            }
+        } catch (e: any) {
+            console.error(e)
+            setActionError(`Fetch Error: ${e.message}`)
         } finally {
             setLoadingMembers(false)
         }

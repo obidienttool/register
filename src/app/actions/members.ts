@@ -65,10 +65,10 @@ export async function buildScopedMembersQuery(supabase: any, filters?: MemberFil
 
     let query = supabase.from('users').select(`
         *,
-        state:states(name),
-        lga:lgas(name),
-        ward:wards(name),
-        polling_unit:polling_units!polling_unit_id(name, code),
+        state:state_id(name),
+        lga:lga_id(name),
+        ward:ward_id(name),
+        polling_unit:polling_unit_id(name, code),
         pu_team:pu_team_members!user_id${joinPuTeam}(role_title)
     `)
 
@@ -109,16 +109,16 @@ export async function getScopedMembers(filters?: MemberFilters) {
 
     if (error) {
         console.error("Error fetching scoped members:", error)
-        return []
+        return { error: error.message, data: [] }
     }
 
     // Handle 'no' filter for puTeamMember manually since Supabase doesn't easily IS NULL joined tables in PostgREST
     let results = data as any[];
     if (filters?.puTeamMember === 'no') {
-        results = results.filter((r) => !r.pu_team || r.pu_team.length === 0)
+        results = results.filter((r) => !r.pu_team || (Array.isArray(r.pu_team) ? r.pu_team.length === 0 : false))
     }
 
-    return results
+    return { data: results }
 }
 
 import * as XLSX from 'xlsx'
@@ -155,7 +155,7 @@ export async function exportMembersAction(filters?: MemberFilters, format: 'csv'
         'Role': row.role,
         'Verified': row.verified ? 'Yes' : 'No',
         'Membership Number': row.membership_number || '',
-        'PU Team Role': row.pu_team && row.pu_team.length > 0 ? row.pu_team[0].role_title : ''
+        'PU Team Role': row.pu_team ? (Array.isArray(row.pu_team) ? (row.pu_team[0]?.role_title || '') : (row.pu_team as any).role_title) : ''
     }))
 
     const worksheet = XLSX.utils.json_to_sheet(rows)
