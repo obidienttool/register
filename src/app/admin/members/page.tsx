@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Users, Cpu } from 'lucide-react'
+import { ArrowLeft, Users, Cpu, Shield, Cog } from 'lucide-react'
 import AdminMembersClient from '@/components/AdminMembersClient'
 
 export default async function AdminMembersPage() {
