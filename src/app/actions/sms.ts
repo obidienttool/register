@@ -1,7 +1,8 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
-import { getScopedMembers, MemberFilters, buildScopedMembersQuery } from '@/app/actions/members'
+import { getScopedMembers } from '@/app/actions/members'
+import { MemberFilters, buildScopedMembersQuery } from '@/lib/member-queries'
 import { sendSMS } from '@/lib/sms'
 import { revalidatePath } from 'next/cache'
 
