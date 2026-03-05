@@ -55,52 +55,52 @@ export type MemberFilters = {
 
 export async function buildScopedMembersQuery(supabase: any, filters?: MemberFilters) {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return null
+    if (!user) return { query: null }
 
     const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
-    if (!profile) return null
+    if (!profile) return { query: null }
 
     // Determine if we need an inner join for pu_team_members (only when filtering for 'yes')
     const joinPuTeam = filters?.puTeamMember === 'yes' ? '!inner' : ''
 
-    let query = supabase.from('users').select(`
+    const query = supabase.from('users').select(`
         *,
-        state:states(name),
-        lga:lgas(name),
-        ward:wards(name),
+        state:states!state_id(name),
+        lga:lgas!lga_id(name),
+        ward:wards!ward_id(name),
         polling_unit:polling_units!polling_unit_id(name, code),
         pu_team:pu_team_members!user_id${joinPuTeam}(role_title)
     `)
 
     // Apply RBAC filters
     if (profile.role === 'WARD_COORDINATOR') {
-        query = query.eq('ward_id', profile.ward_id)
+        query.eq('ward_id', profile.ward_id)
     } else if (profile.role === 'LGA_COORDINATOR') {
-        query = query.eq('lga_id', profile.lga_id)
+        query.eq('lga_id', profile.lga_id)
     } else if (profile.role === 'STATE_COORDINATOR') {
-        query = query.eq('state_id', profile.state_id)
+        query.eq('state_id', profile.state_id)
     } else if (profile.role !== 'ADMIN') {
-        return null // Unauthorized
+        return { query: null } // Unauthorized
     }
 
     // Apply Location filters
-    if (filters?.stateId) query = query.eq('state_id', filters.stateId)
-    if (filters?.lgaId) query = query.eq('lga_id', filters.lgaId)
-    if (filters?.wardId) query = query.eq('ward_id', filters.wardId)
-    if (filters?.puId) query = query.eq('polling_unit_id', filters.puId)
+    if (filters?.stateId) query.eq('state_id', filters.stateId)
+    if (filters?.lgaId) query.eq('lga_id', filters.lgaId)
+    if (filters?.wardId) query.eq('ward_id', filters.wardId)
+    if (filters?.puId) query.eq('polling_unit_id', filters.puId)
 
     // Apply Advanced filters
-    if (filters?.role) query = query.eq('role', filters.role)
-    if (filters?.verified === 'yes') query = query.eq('verified', true)
-    if (filters?.verified === 'no') query = query.eq('verified', false)
+    if (filters?.role) query.eq('role', filters.role)
+    if (filters?.verified === 'yes') query.eq('verified', true)
+    if (filters?.verified === 'no') query.eq('verified', false)
 
-    return query
+    return { query }
 }
 
 export async function getScopedMembers(filters?: MemberFilters) {
     try {
         const supabase = await createClient()
-        const query = await buildScopedMembersQuery(supabase, filters)
+        const { query } = await buildScopedMembersQuery(supabase, filters)
         if (!query) return { data: [] }
 
         // Pagination/Limit for view
@@ -128,13 +128,11 @@ import * as XLSX from 'xlsx'
 
 export async function exportMembersAction(filters?: MemberFilters, format: 'csv' | 'xlsx' = 'xlsx') {
     const supabase = await createClient()
-    let query = await buildScopedMembersQuery(supabase, filters)
+    const { query } = await buildScopedMembersQuery(supabase, filters)
     if (!query) return { success: false, error: 'Unauthorized' }
 
     // Export query has NO limit to export all matching results
-    query = query.order('created_at', { ascending: false })
-
-    const { data, error } = await query
+    const { data, error } = await query.order('created_at', { ascending: false })
 
     if (error) {
         console.error("Error exporting members:", error)
@@ -202,9 +200,9 @@ export async function getStaffMembers() {
         .from('users')
         .select(`
             *,
-            state:states(name),
-            lga:lgas(name),
-            ward:wards(name)
+            state:states!state_id(name),
+            lga:lgas!lga_id(name),
+            ward:wards!ward_id(name)
         `)
         .neq('role', 'MEMBER')
         .order('full_name', { ascending: true })
