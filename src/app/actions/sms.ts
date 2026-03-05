@@ -26,7 +26,13 @@ export async function checkRateLimit(userId: string) {
 
 export async function getBroadcastAudienceCount(filters: MemberFilters) {
     const supabase = await createClient()
-    const query = await buildScopedMembersQuery(supabase, filters)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return 0
+
+    const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
+    if (!profile) return 0
+
+    const query = buildScopedMembersQuery(supabase, profile, filters)
     if (!query) return 0
 
     const { data } = await query
@@ -62,7 +68,10 @@ export async function broadcastSMSAction(filters: MemberFilters, message: string
     }
 
     // Get Target Audience Limitless
-    const query = await buildScopedMembersQuery(supabase, filters)
+    const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
+    if (!profile) return { success: false, error: 'Unauthorized' }
+
+    const query = buildScopedMembersQuery(supabase, profile, filters)
     if (!query) return { success: false, error: 'Unauthorized query scope.' }
 
     const { data: targets } = await query

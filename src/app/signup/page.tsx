@@ -214,7 +214,7 @@ function SignupForm() {
                         </label>
                         <select name="polling_unit_id" required disabled={!selectedWard} className="w-full disabled:bg-gray-100 rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-green-500 bg-white">
                             <option value="" disabled>Select Polling Unit</option>
-                            {pollingUnits.map((pu) => <option key={pu.id} value={pu.id}>{pu.code ? `${pu.code} - ` : ''}{pu.name}</option>)}
+                            {pollingUnits.map((pu) => <option key={pu.id} value={pu.id}>{pu.code ? `${pu.code}-` : ''}{pu.name}</option>)}
                         </select>
                     </div>
                 </div>

@@ -22,6 +22,7 @@ export default function AdminMembersClient({ callerRole }: { callerRole: string 
     const [filterRole, setFilterRole] = useState<string>('')
     const [filterVerified, setFilterVerified] = useState<string>('')
     const [filterPuTeam, setFilterPuTeam] = useState<string>('')
+    const [searchQuery, setSearchQuery] = useState<string>('')
 
     const [isPending, startTransition] = useTransition()
     const [loadingMembers, setLoadingMembers] = useState(false)
@@ -64,10 +65,13 @@ export default function AdminMembersClient({ callerRole }: { callerRole: string 
         }
     }, [filterWard])
 
-    // Fetch whenever filters change
+    // Fetch whenever filters or search change
     useEffect(() => {
-        fetchMembers()
-    }, [filterState, filterLga, filterWard, filterPu, filterRole, filterVerified, filterPuTeam])
+        const timer = setTimeout(() => {
+            fetchMembers()
+        }, 500)
+        return () => clearTimeout(timer)
+    }, [filterState, filterLga, filterWard, filterPu, filterRole, filterVerified, filterPuTeam, searchQuery])
 
     const fetchMembers = async () => {
         setLoadingMembers(true)
@@ -80,6 +84,7 @@ export default function AdminMembersClient({ callerRole }: { callerRole: string 
                 ...(filterRole ? { role: filterRole } : {}),
                 ...(filterVerified ? { verified: filterVerified } : {}),
                 ...(filterPuTeam ? { puTeamMember: filterPuTeam } : {}),
+                ...(searchQuery ? { search: searchQuery } : {}),
             }
             const res = await getScopedMembers(filters)
             if (res && 'error' in res && res.error) {
@@ -236,6 +241,16 @@ export default function AdminMembersClient({ callerRole }: { callerRole: string 
                     </select>
                 </div>
                 <div className="flex flex-col justify-end">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Search Members</label>
+                    <input
+                        type="text"
+                        placeholder="Name or Phone..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full rounded-md border border-gray-300 py-2 px-3 focus:ring-green-500"
+                    />
+                </div>
+                <div className="flex flex-col justify-end md:col-span-1">
                     <div className="flex gap-2 w-full">
                         <button
                             disabled={exporting || loadingMembers}

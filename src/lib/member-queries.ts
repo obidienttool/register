@@ -6,6 +6,7 @@ export type MemberFilters = {
     role?: string;
     verified?: string; // 'yes' | 'no' | ''
     puTeamMember?: string; // 'yes' | 'no' | ''
+    search?: string;
 }
 
 /**
@@ -51,6 +52,11 @@ export function buildScopedMembersQuery(supabase: any, profile: any, filters?: M
     if (filters?.role) query.eq('role', filters.role)
     if (filters?.verified === 'yes') query.eq('verified', true)
     if (filters?.verified === 'no') query.eq('verified', false)
+
+    // Apply Search
+    if (filters?.search) {
+        query.or(`full_name.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`)
+    }
 
     return query
 }
