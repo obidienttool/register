@@ -65,10 +65,10 @@ export async function buildScopedMembersQuery(supabase: any, filters?: MemberFil
 
     let query = supabase.from('users').select(`
         *,
-        state:state_id(name),
-        lga:lga_id(name),
-        ward:ward_id(name),
-        polling_unit:polling_unit_id(name, code),
+        state:states(name),
+        lga:lgas(name),
+        ward:wards(name),
+        polling_unit:polling_units!polling_unit_id(name, code),
         pu_team:pu_team_members!user_id${joinPuTeam}(role_title)
     `)
 
@@ -98,27 +98,30 @@ export async function buildScopedMembersQuery(supabase: any, filters?: MemberFil
 }
 
 export async function getScopedMembers(filters?: MemberFilters) {
-    const supabase = await createClient()
-    let query = await buildScopedMembersQuery(supabase, filters)
-    if (!query) return []
+    try {
+        const supabase = await createClient()
+        const query = await buildScopedMembersQuery(supabase, filters)
+        if (!query) return { data: [] }
 
-    // Pagination/Limit for view
-    query = query.order('created_at', { ascending: false }).limit(200)
+        // Pagination/Limit for view
+        const { data, error } = await query.order('created_at', { ascending: false }).limit(200)
 
-    const { data, error } = await query
+        if (error) {
+            console.error("Error fetching scoped members query:", error.message)
+            return { error: `Database Error: ${error.message}`, data: [] }
+        }
 
-    if (error) {
-        console.error("Error fetching scoped members:", error)
-        return { error: error.message, data: [] }
+        // Handle 'no' filter for puTeamMember manually since Supabase doesn't easily IS NULL joined tables in PostgREST
+        let results = data as any[];
+        if (filters?.puTeamMember === 'no') {
+            results = results.filter((r) => !r.pu_team || (Array.isArray(r.pu_team) ? r.pu_team.length === 0 : false))
+        }
+
+        return { data: results }
+    } catch (e: any) {
+        console.error("Internal getScopedMembers Error:", e)
+        return { error: `Internal Server Error: ${e.message}`, data: [] }
     }
-
-    // Handle 'no' filter for puTeamMember manually since Supabase doesn't easily IS NULL joined tables in PostgREST
-    let results = data as any[];
-    if (filters?.puTeamMember === 'no') {
-        results = results.filter((r) => !r.pu_team || (Array.isArray(r.pu_team) ? r.pu_team.length === 0 : false))
-    }
-
-    return { data: results }
 }
 
 import * as XLSX from 'xlsx'
