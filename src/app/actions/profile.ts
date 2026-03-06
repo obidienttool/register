@@ -11,6 +11,7 @@ export async function updateProfileAction(formData: FormData) {
 
     const fullName = formData.get('fullName') as string
     const phone = formData.get('phone') as string
+    const photoUrl = formData.get('photoUrl') as string
 
     if (!fullName || !phone) {
         return { success: false, error: 'Name and Phone are required.' }
@@ -21,6 +22,7 @@ export async function updateProfileAction(formData: FormData) {
         .update({
             full_name: fullName,
             phone: phone,
+            ...(photoUrl ? { photo_url: photoUrl } : {})
         })
         .eq('id', user.id)
 

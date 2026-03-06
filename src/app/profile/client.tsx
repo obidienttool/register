@@ -4,17 +4,20 @@ import React, { useState } from 'react'
 import { updateProfileAction } from '@/app/actions/profile'
 import { User, Phone, Save, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import PhotoUpload from '@/components/PhotoUpload'
 
 interface ProfileClientProps {
     profile: {
         full_name: string
         phone: string
+        photo_url?: string
     }
 }
 
 export default function ProfileClient({ profile }: ProfileClientProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+    const [photoUrl, setPhotoUrl] = useState(profile.photo_url)
     const router = useRouter()
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -48,6 +51,14 @@ export default function ProfileClient({ profile }: ProfileClientProps) {
                             <p className="text-sm font-bold">{message.text}</p>
                         </div>
                     )}
+
+                    <div className="flex justify-center mb-8">
+                        <PhotoUpload
+                            currentPhotoUrl={photoUrl}
+                            onUploadSuccess={(url) => setPhotoUrl(url)}
+                        />
+                        <input type="hidden" name="photoUrl" value={photoUrl || ''} />
+                    </div>
 
                     <div className="space-y-4">
                         <div className="space-y-2">

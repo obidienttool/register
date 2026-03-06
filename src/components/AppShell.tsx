@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import MobileNav from './MobileNav'
 import MobileMenu from './MobileMenu'
-import { Shield, Bell, LogOut, ChevronLeft } from 'lucide-react'
+import { Shield, Bell, LogOut, ChevronLeft, UserCircle } from 'lucide-react'
 import { logout } from '@/app/actions/auth'
 import Link from 'next/link'
 
@@ -64,6 +64,13 @@ export default function AppShell({ children, profile, title, backHref }: AppShel
                                 <p className="text-sm font-bold text-slate-900">{profile.full_name}</p>
                                 <p className="text-xs text-slate-500">{profile.phone}</p>
                             </div>
+                            <Link href="/profile" className="w-10 h-10 rounded-full overflow-hidden border-2 border-slate-100 bg-slate-50 flex items-center justify-center hover:border-green-500 transition-colors shrink-0">
+                                {profile.photo_url ? (
+                                    <img src={profile.photo_url} alt="" className="w-full h-full object-cover" />
+                                ) : (
+                                    <UserCircle className="w-6 h-6 text-slate-300" />
+                                )}
+                            </Link>
                             <form action={logout}>
                                 <button type="submit" className="p-2 md:p-2.5 bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 rounded-xl transition duration-200">
                                     <LogOut className="w-5 h-5 md:w-6 md:h-6" />

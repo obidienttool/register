@@ -23,9 +23,15 @@ export default function MobileMenu({ isOpen, onClose, profile }: MobileMenuProps
 
     const sections = [
         {
-            title: 'Directory',
+            title: 'Community',
             items: [
-                { name: 'Members Directory', href: '/admin/members', icon: Users },
+                { name: 'Members Directory', href: '/directory', icon: Users },
+            ]
+        },
+        {
+            title: 'Administration',
+            items: [
+                { name: 'Manage Network', href: '/admin/members', icon: Users },
                 { name: 'Unregistered', href: '/admin/unregistered-members', icon: ClipboardList },
             ]
         },
@@ -103,7 +109,14 @@ export default function MobileMenu({ isOpen, onClose, profile }: MobileMenuProps
                                 )}
                                 <Link href="/profile" onClick={onClose} className="flex items-center justify-between p-4 bg-slate-50 text-slate-700 rounded-2xl font-bold text-sm">
                                     <div className="flex items-center gap-3">
-                                        <UserCircle className="w-5 h-5 text-slate-400" /> Account Profile
+                                        <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 bg-white flex items-center justify-center shrink-0">
+                                            {profile.photo_url ? (
+                                                <img src={profile.photo_url} alt="" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <UserCircle className="w-5 h-5 text-slate-400" />
+                                            )}
+                                        </div>
+                                        Account Profile
                                     </div>
                                 </Link>
                                 <form action={logout}>

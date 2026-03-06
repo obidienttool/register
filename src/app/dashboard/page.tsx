@@ -74,15 +74,27 @@ export default async function DashboardPage() {
 
                 {/* Welcome Card - Optimized for Mobile First */}
                 <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
-                    <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-slate-100 bg-slate-50 flex items-center justify-center shrink-0 shadow-sm">
+                            {profile.photo_url ? (
+                                <img src={profile.photo_url} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                                <UserCircle className="w-10 h-10 text-slate-300" />
+                            )}
+                        </div>
                         <div>
                             <h2 className="text-xl md:text-2xl font-bold text-slate-900 leading-tight">
                                 Hello, {profile.full_name.split(' ')[0]} 👋
                             </h2>
-                            <p className="text-slate-500 text-sm mt-1">
-                                Welcome back. Everything looks good today.
+                            <p className="text-slate-500 text-xs mt-0.5 font-medium">
+                                {profile.role?.replace('_', ' ')}
                             </p>
                         </div>
+                    </div>
+                    <div className="flex flex-col gap-4">
+                        <p className="text-slate-500 text-sm">
+                            Welcome back. Everything looks good today.
+                        </p>
                         <div className="flex flex-wrap gap-2">
                             <div className="bg-green-50 px-3 py-1.5 rounded-lg flex items-center gap-2 border border-green-100">
                                 <CheckCircle className="w-4 h-4 text-green-600" />
@@ -174,12 +186,21 @@ export default async function DashboardPage() {
                                     </p>
                                 </div>
                                 <div className="flex items-end justify-between">
-                                    <div className="max-w-[150px]">
-                                        <p className="text-white text-sm font-bold uppercase truncate">{profile.full_name}</p>
-                                        <div className="flex items-center gap-2">
-                                            <p className="text-slate-500 text-[9px] uppercase tracking-wide">{profile.role.replace('_', ' ')}</p>
-                                            <span className="text-slate-700">|</span>
-                                            <Link href="/profile" className="text-green-500 text-[9px] uppercase font-bold hover:text-green-400 transition">Edit</Link>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-12 h-12 rounded-xl overflow-hidden border-2 border-slate-700 bg-slate-800 flex items-center justify-center shrink-0 shadow-inner">
+                                            {profile.photo_url ? (
+                                                <img src={profile.photo_url} alt="" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <UserCircle className="w-8 h-8 text-slate-600" />
+                                            )}
+                                        </div>
+                                        <div className="max-w-[150px]">
+                                            <p className="text-white text-sm font-bold uppercase truncate">{profile.full_name}</p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-slate-500 text-[9px] uppercase tracking-wide">{profile.role.replace('_', ' ')}</p>
+                                                <span className="text-slate-700">|</span>
+                                                <Link href="/profile" className="text-green-500 text-[9px] uppercase font-bold hover:text-green-400 transition">Edit</Link>
+                                            </div>
                                         </div>
                                     </div>
                                     <CheckCircle className={`w-5 h-5 ${profile.verified ? 'text-green-500' : 'text-slate-700'}`} />
@@ -196,13 +217,22 @@ export default async function DashboardPage() {
                                 Command Center
                             </h3>
                             <div className="space-y-3">
+                                <Link href="/directory" className="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-green-50 rounded-2xl group transition-all">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-white p-1.5 rounded-lg shadow-sm group-hover:text-green-600 text-slate-400 transition-colors">
+                                            <Users className="w-4 h-4" />
+                                        </div>
+                                        <span className="text-sm font-bold text-slate-700">Members Directory</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
+                                </Link>
                                 {isAdminOrCoord && (
                                     <Link href="/admin/members" className="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-green-50 rounded-2xl group transition-all">
                                         <div className="flex items-center gap-3">
                                             <div className="bg-white p-1.5 rounded-lg shadow-sm group-hover:text-green-600 text-slate-400 transition-colors">
-                                                <Users className="w-4 h-4" />
+                                                <Shield className="w-4 h-4" />
                                             </div>
-                                            <span className="text-sm font-bold text-slate-700">All Members</span>
+                                            <span className="text-sm font-bold text-slate-700">Staff Control</span>
                                         </div>
                                         <ChevronRight className="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
                                     </Link>

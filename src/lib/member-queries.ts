@@ -38,6 +38,8 @@ export function buildScopedMembersQuery(supabase: any, profile: any, filters?: M
         query.eq('lga_id', profile.lga_id)
     } else if (profile.role === 'STATE_COORDINATOR') {
         query.eq('state_id', profile.state_id)
+    } else if (profile.role === 'MEMBER') {
+        query.eq('ward_id', profile.ward_id)
     } else if (profile.role !== 'ADMIN') {
         return null // Unauthorized
     }
