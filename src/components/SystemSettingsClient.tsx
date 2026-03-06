@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Save, ShieldCheck, Eye, EyeOff, Key, Cpu, MessageSquare } from 'lucide-react'
+import { Save, ShieldCheck, Eye, EyeOff, Key, Cpu, MessageSquare, User } from 'lucide-react'
 import { updateAppSetting } from '@/app/actions/config'
 
 type AppSetting = {
