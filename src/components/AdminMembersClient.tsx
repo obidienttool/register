@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
+import Link from 'next/link'
 import { getStates, getLgas, getWards, getPollingUnits } from '@/app/actions/locations'
 import { getScopedMembers, verifyMemberAction, promoteMemberAction, exportMembersAction } from '@/app/actions/members'
 import { ROLES } from '../utils/rbac'
