@@ -9,7 +9,7 @@ export default function MobileNav({ isAdmin, onMenuClick }: { isAdmin: boolean, 
 
     const navItems = [
         { name: 'Home', href: '/dashboard', icon: Home },
-        { name: 'Members', href: '/admin/members', icon: Users },
+        { name: 'Directory', href: '/directory', icon: Users },
         { name: 'Broadcast', href: '/admin/sms', icon: Newspaper },
         { name: 'Menu', href: '#menu', icon: LayoutGrid, isTrigger: true },
     ]

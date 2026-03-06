@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import MobileNav from './MobileNav'
 import MobileMenu from './MobileMenu'
+import DesktopNav from './DesktopNav'
 import { Shield, Bell, LogOut, ChevronLeft, UserCircle } from 'lucide-react'
 import { logout } from '@/app/actions/auth'
 import Link from 'next/link'
@@ -48,6 +49,9 @@ export default function AppShell({ children, profile, title, backHref }: AppShel
                                     {profile.role?.replace('_', ' ')}
                                 </p>
                             )}
+                        </div>
+                        <div className="hidden md:block ml-8 border-l border-slate-100 pl-6">
+                            <DesktopNav />
                         </div>
                     </div>
 

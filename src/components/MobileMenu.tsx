@@ -8,6 +8,7 @@ import {
     Settings, LogOut, Info, ClipboardList, UserCircle
 } from 'lucide-react'
 import { logout } from '@/app/actions/auth'
+import { NAV_SECTIONS } from '@/lib/nav-config'
 
 interface MobileMenuProps {
     isOpen: boolean
@@ -21,36 +22,7 @@ export default function MobileMenu({ isOpen, onClose, profile }: MobileMenuProps
     const isAdmin = profile.role === 'ADMIN'
     const isCoord = 1 // Simplified check for now
 
-    const sections = [
-        {
-            title: 'Community',
-            items: [
-                { name: 'Members Directory', href: '/directory', icon: Users },
-            ]
-        },
-        {
-            title: 'Administration',
-            items: [
-                { name: 'Manage Network', href: '/admin/members', icon: Users },
-                { name: 'Unregistered', href: '/admin/unregistered-members', icon: ClipboardList },
-            ]
-        },
-        {
-            title: 'Operations',
-            items: [
-                { name: 'SMS Broadcast', href: '/admin/sms', icon: Megaphone },
-                { name: 'Polling Units', href: '/admin/polling-units', icon: Landmark },
-                //{ name: 'Team Logs', href: '/admin/manager', icon: ClipboardList },
-            ]
-        },
-        {
-            title: 'Insights',
-            items: [
-                { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
-                { name: 'AI Intelligence', href: '/admin/intelligence', icon: BrainCircuit },
-            ]
-        }
-    ]
+    const sections = NAV_SECTIONS
 
     return (
         <div className="fixed inset-0 z-[200] md:hidden">
