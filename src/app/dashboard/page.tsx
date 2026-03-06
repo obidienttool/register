@@ -176,7 +176,11 @@ export default async function DashboardPage() {
                                 <div className="flex items-end justify-between">
                                     <div className="max-w-[150px]">
                                         <p className="text-white text-sm font-bold uppercase truncate">{profile.full_name}</p>
-                                        <p className="text-slate-500 text-[9px] uppercase tracking-wide">{profile.role.replace('_', ' ')}</p>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-slate-500 text-[9px] uppercase tracking-wide">{profile.role.replace('_', ' ')}</p>
+                                            <span className="text-slate-700">|</span>
+                                            <Link href="/profile" className="text-green-500 text-[9px] uppercase font-bold hover:text-green-400 transition">Edit</Link>
+                                        </div>
                                     </div>
                                     <CheckCircle className={`w-5 h-5 ${profile.verified ? 'text-green-500' : 'text-slate-700'}`} />
                                 </div>

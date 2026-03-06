@@ -5,7 +5,7 @@ import Link from 'next/link'
 import {
     X, LayoutGrid, Users, Megaphone,
     BarChart3, BrainCircuit, Landmark,
-    Settings, LogOut, Info, ClipboardList
+    Settings, LogOut, Info, ClipboardList, UserCircle
 } from 'lucide-react'
 import { logout } from '@/app/actions/auth'
 
@@ -101,6 +101,11 @@ export default function MobileMenu({ isOpen, onClose, profile }: MobileMenuProps
                                         </div>
                                     </Link>
                                 )}
+                                <Link href="/profile" onClick={onClose} className="flex items-center justify-between p-4 bg-slate-50 text-slate-700 rounded-2xl font-bold text-sm">
+                                    <div className="flex items-center gap-3">
+                                        <UserCircle className="w-5 h-5 text-slate-400" /> Account Profile
+                                    </div>
+                                </Link>
                                 <form action={logout}>
                                     <button type="submit" className="w-full flex items-center justify-between p-4 bg-red-50 text-red-600 rounded-2xl font-bold text-sm text-left">
                                         <div className="flex items-center gap-3">
