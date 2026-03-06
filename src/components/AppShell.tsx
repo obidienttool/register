@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import MobileNav from './MobileNav'
 import MobileMenu from './MobileMenu'
