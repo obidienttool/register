@@ -4,7 +4,7 @@ import { useState, useEffect, useTransition } from 'react'
 import { getStates, getLgas, getWards, getPollingUnits } from '@/app/actions/locations'
 import { getScopedMembers, verifyMemberAction, promoteMemberAction, exportMembersAction } from '@/app/actions/members'
 import { ROLES } from '../utils/rbac'
-import { Check, ShieldAlert, BadgeInfo, Download } from 'lucide-react'
+import { Check, ShieldAlert, BadgeInfo, Download, Settings, ChevronRight, MapPin, CheckCircle, Users } from 'lucide-react'
 
 type LocationOptions = { id: number; name: string }[]
 
