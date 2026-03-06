@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import {
     MapPin, Shield, CheckCircle,
     Users, Newspaper, ExternalLink,
-    ChevronRight, ArrowRight, Settings, Info
+    ChevronRight, ArrowRight, Settings, Info, LayoutGrid, UserCircle
 } from 'lucide-react'
 import Link from 'next/link'
 import AppShell from '@/components/AppShell'
@@ -187,19 +187,43 @@ export default async function DashboardPage() {
                             </div>
                         </div>
 
-                        {/* Quick Actions - Desktop Only (Mobile has Bottom Nav) */}
-                        <section className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 hidden md:block">
-                            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-4">
-                                <Settings className="w-4 h-4 text-slate-400" /> Admin Tools
+                        {/* Command Center - Desktop sidebar action card */}
+                        <section className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 hidden md:block">
+                            <h3 className="text-sm font-black text-slate-900 flex items-center gap-3 mb-6">
+                                <div className="bg-slate-100 p-1.5 rounded-lg">
+                                    <LayoutGrid className="w-4 h-4 text-slate-600" />
+                                </div>
+                                Command Center
                             </h3>
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                                 {isAdminOrCoord && (
-                                    <Link href="/admin/members" className="w-full flex items-center justify-between p-3 bg-slate-50 hover:bg-green-50 rounded-xl group transition font-bold text-sm text-slate-700">
-                                        Members Management <ChevronRight className="w-4 h-4 text-slate-300 group-hover:translate-x-1" />
+                                    <Link href="/admin/members" className="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-green-50 rounded-2xl group transition-all">
+                                        <div className="flex items-center gap-3">
+                                            <div className="bg-white p-1.5 rounded-lg shadow-sm group-hover:text-green-600 text-slate-400 transition-colors">
+                                                <Users className="w-4 h-4" />
+                                            </div>
+                                            <span className="text-sm font-bold text-slate-700">All Members</span>
+                                        </div>
+                                        <ChevronRight className="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
                                     </Link>
                                 )}
-                                <Link href="/admin/sms" className="w-full flex items-center justify-between p-3 bg-slate-50 hover:bg-green-50 rounded-xl group transition font-bold text-sm text-slate-700">
-                                    Broadcast SMS <ChevronRight className="w-4 h-4 text-slate-300 group-hover:translate-x-1" />
+                                <Link href="/admin/sms" className="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-green-50 rounded-2xl group transition-all">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-white p-1.5 rounded-lg shadow-sm group-hover:text-green-600 text-slate-400 transition-colors">
+                                            <Newspaper className="w-4 h-4" />
+                                        </div>
+                                        <span className="text-sm font-bold text-slate-700">SMS Broadcast</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                                <Link href="/profile" className="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-green-50 rounded-2xl group transition-all">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-white p-1.5 rounded-lg shadow-sm group-hover:text-green-600 text-slate-400 transition-colors">
+                                            <UserCircle className="w-4 h-4" />
+                                        </div>
+                                        <span className="text-sm font-bold text-slate-700">Edit Profile</span>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
                                 </Link>
                             </div>
                         </section>
