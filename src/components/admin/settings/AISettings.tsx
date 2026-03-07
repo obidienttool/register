@@ -8,7 +8,7 @@ export default function AISettings({ settings, onUpdate, isPending }: {
 }) {
     const coreSettings = settings.filter(s => s.id === 'ai_provider' || s.id === 'ai_model')
     const instructSettings = settings.filter(s => s.id === 'ai_system_instructions')
-    const keySettings = settings.filter(s => s.id === 'openai_api_key' || s.id === 'anthropic_api_key')
+    const keySettings = settings.filter(s => ['openai_api_key', 'anthropic_api_key', 'groq_api_key', 'xai_api_key'].includes(s.id))
 
     return (
         <div className="space-y-6">

@@ -10,14 +10,20 @@ export async function analyzeNetworkMetrics(metrics: any) {
     const config = Object.fromEntries(settings?.map(s => [s.id, s.value]) || [])
 
     const provider = (config.ai_provider || process.env.AI_PROVIDER || 'openai').toLowerCase()
-    const apiKey = provider === 'grok'
-        ? (config.xai_api_key || process.env.XAI_API_KEY)
-        : (config.openai_api_key || process.env.OPENAI_API_KEY)
 
-    const baseURL = provider === 'grok' ? 'https://api.x.ai/v1' : undefined
-    const model = provider === 'grok'
-        ? (config.grok_model || 'grok-beta')
-        : (config.openai_model || 'gpt-4o-mini')
+    let apiKey = config.openai_api_key || process.env.OPENAI_API_KEY
+    let baseURL = undefined
+    let model = config.ai_model || 'gpt-4o-mini'
+
+    if (provider === 'grok' || provider === 'xai') {
+        apiKey = config.xai_api_key || process.env.XAI_API_KEY
+        baseURL = 'https://api.x.ai/v1'
+        model = config.ai_model || 'grok-beta'
+    } else if (provider === 'groq') {
+        apiKey = config.groq_api_key || process.env.GROQ_API_KEY
+        baseURL = 'https://api.groq.com/openai/v1'
+        model = config.ai_model || 'llama-3.1-70b-versatile'
+    }
 
     if (!apiKey) {
         console.warn(`${provider.toUpperCase()} API key not found. Implementing mocked intelligence layer.`)

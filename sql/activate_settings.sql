@@ -51,6 +51,8 @@ INSERT INTO public.app_settings (id, value, description, is_secret, category) VA
 ('ai_system_instructions', 'You are an AI assistant for the Obidient community. You are patriotic, respectful, and helpful.', 'The system prompt for AI behavior', false, 'ai'),
 ('openai_api_key', '', 'Secret token for OpenAI', true, 'ai'),
 ('anthropic_api_key', '', 'Secret token for Anthropic', true, 'ai'),
+('groq_api_key', '', 'Secret token for Groq AI', true, 'ai'),
+('xai_api_key', '', 'Secret token for xAI (Grok)', true, 'ai'),
 
 -- Feature Modules
 ('feature_directory_enabled', 'true', 'Enable the Members Directory', false, 'features'),
