@@ -22,7 +22,9 @@ export default function MobileMenu({ isOpen, onClose, profile }: MobileMenuProps
     const isAdmin = profile.role === 'ADMIN'
     const isCoord = 1 // Simplified check for now
 
-    const sections = NAV_SECTIONS
+    const sections = NAV_SECTIONS.filter(section =>
+        !section.roles || section.roles.includes(profile.role)
+    )
 
     return (
         <div className="fixed inset-0 z-[200] md:hidden">

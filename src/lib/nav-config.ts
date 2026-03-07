@@ -14,6 +14,7 @@ export const NAV_SECTIONS = [
     },
     {
         title: 'Administration',
+        roles: ['ADMIN', 'STATE_COORDINATOR', 'LGA_COORDINATOR', 'WARD_COORDINATOR'],
         items: [
             { name: 'Manage Network', href: '/admin/members', icon: Users },
             { name: 'Unregistered', href: '/admin/unregistered-members', icon: ClipboardList },
@@ -21,6 +22,7 @@ export const NAV_SECTIONS = [
     },
     {
         title: 'Operations',
+        roles: ['ADMIN', 'STATE_COORDINATOR', 'LGA_COORDINATOR', 'WARD_COORDINATOR'],
         items: [
             { name: 'SMS Broadcast', href: '/admin/sms', icon: Megaphone },
             { name: 'Email Broadcast', href: '/admin/email', icon: Mail },
@@ -29,6 +31,7 @@ export const NAV_SECTIONS = [
     },
     {
         title: 'Insights',
+        roles: ['ADMIN', 'STATE_COORDINATOR', 'LGA_COORDINATOR', 'WARD_COORDINATOR'],
         items: [
             { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
             { name: 'AI Intelligence', href: '/admin/intelligence', icon: BrainCircuit },

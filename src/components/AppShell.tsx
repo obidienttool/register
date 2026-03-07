@@ -51,7 +51,7 @@ export default function AppShell({ children, profile, title, backHref }: AppShel
                             )}
                         </div>
                         <div className="hidden md:block ml-8 border-l border-slate-100 pl-6">
-                            <DesktopNav />
+                            <DesktopNav userRole={profile.role} />
                         </div>
                     </div>
 

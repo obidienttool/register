@@ -5,12 +5,16 @@ import Link from 'next/link'
 import { ChevronDown } from 'lucide-react'
 import { NAV_SECTIONS } from '@/lib/nav-config'
 
-export default function DesktopNav() {
+export default function DesktopNav({ userRole }: { userRole: string }) {
     const [activeSection, setActiveSection] = useState<string | null>(null)
+
+    const filteredSections = NAV_SECTIONS.filter(section =>
+        !section.roles || section.roles.includes(userRole)
+    )
 
     return (
         <nav className="hidden md:flex items-center gap-1">
-            {NAV_SECTIONS.map((section) => (
+            {filteredSections.map((section) => (
                 <div
                     key={section.title}
                     className="relative group"
