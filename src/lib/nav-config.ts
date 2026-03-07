@@ -1,7 +1,7 @@
 import {
     Home, Users, Megaphone,
     BarChart3, BrainCircuit, Landmark,
-    ClipboardList, LayoutGrid
+    ClipboardList, LayoutGrid, Mail
 } from 'lucide-react'
 
 export const NAV_SECTIONS = [
@@ -23,6 +23,7 @@ export const NAV_SECTIONS = [
         title: 'Operations',
         items: [
             { name: 'SMS Broadcast', href: '/admin/sms', icon: Megaphone },
+            { name: 'Email Broadcast', href: '/admin/email', icon: Mail },
             { name: 'Polling Units', href: '/admin/polling-units', icon: Landmark },
         ]
     },
