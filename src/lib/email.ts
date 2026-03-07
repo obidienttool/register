@@ -1,6 +1,11 @@
+import { getInternalSetting } from '@/app/actions/config'
+
 export async function sendEmail({ to, subject, html }: { to: string[], subject: string, html: string }) {
-    const apiKey = process.env.RESEND_API_KEY
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+    const dbApiKey = await getInternalSetting('resend_api_key')
+    const dbFromEmail = await getInternalSetting('resend_from_email')
+
+    const apiKey = dbApiKey || process.env.RESEND_API_KEY
+    const fromEmail = dbFromEmail || process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
 
     // Basic mock output for local environment without API KEY
     if (!apiKey) {

@@ -1,6 +1,11 @@
+import { getInternalSetting } from '@/app/actions/config'
+
 export async function sendSMS({ to, message }: { to: string[], message: string }) {
-    const apiKey = process.env.SMS_API_KEY
-    const senderId = process.env.SMS_SENDER_ID || 'OBIDIENT'
+    const dbApiKey = await getInternalSetting('sms_api_key')
+    const dbSenderId = await getInternalSetting('sms_sender_id')
+
+    const apiKey = dbApiKey || process.env.SMS_API_KEY
+    const senderId = dbSenderId || process.env.SMS_SENDER_ID || 'OBIDIENT'
 
     // Format numbers to remove leading zero and add +234 if it's Nigerian
     const formattedNumbers = to.map(phone => {
