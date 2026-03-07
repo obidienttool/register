@@ -77,7 +77,7 @@ export default function MobileMenu({ isOpen, onClose, profile }: MobileMenuProps
                                 {isAdmin && (
                                     <Link href="/admin/settings" onClick={onClose} className="flex items-center justify-between p-4 bg-indigo-50 text-indigo-700 rounded-2xl font-bold text-sm">
                                         <div className="flex items-center gap-3">
-                                            <Settings className="w-5 h-5" /> System Configuration
+                                            <Settings className="w-5 h-5" /> Settings Hub
                                         </div>
                                     </Link>
                                 )}

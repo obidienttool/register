@@ -1,7 +1,7 @@
 import {
     Home, Users, Megaphone,
     BarChart3, BrainCircuit, Landmark,
-    ClipboardList, LayoutGrid, Mail
+    ClipboardList, LayoutGrid, Mail, Settings
 } from 'lucide-react'
 
 export const NAV_SECTIONS = [
@@ -18,6 +18,7 @@ export const NAV_SECTIONS = [
         items: [
             { name: 'Manage Network', href: '/admin/members', icon: Users },
             { name: 'Unregistered', href: '/admin/unregistered-members', icon: ClipboardList },
+            { name: 'Settings Hub', href: '/admin/settings', icon: Settings },
         ]
     },
     {

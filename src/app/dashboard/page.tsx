@@ -246,6 +246,17 @@ export default async function DashboardPage() {
                                     </div>
                                     <ChevronRight className="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform" />
                                 </Link>
+                                {profile.role === 'ADMIN' && (
+                                    <Link href="/admin/settings" className="w-full flex items-center justify-between p-3.5 bg-indigo-50 hover:bg-indigo-100/50 rounded-2xl group transition-all border border-indigo-100/50">
+                                        <div className="flex items-center gap-3">
+                                            <div className="bg-white p-1.5 rounded-lg shadow-sm group-hover:text-indigo-600 text-indigo-400 transition-colors">
+                                                <Settings className="w-4 h-4" />
+                                            </div>
+                                            <span className="text-sm font-bold text-indigo-900 font-mono tracking-tight uppercase">Settings Hub</span>
+                                        </div>
+                                        <ChevronRight className="w-4 h-4 text-indigo-300 group-hover:translate-x-1 transition-transform" />
+                                    </Link>
+                                )}
                                 <Link href="/profile" className="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-green-50 rounded-2xl group transition-all">
                                     <div className="flex items-center gap-3">
                                         <div className="bg-white p-1.5 rounded-lg shadow-sm group-hover:text-green-600 text-slate-400 transition-colors">
