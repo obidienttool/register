@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 
 export async function verifyMemberAction(targetUserId: string) {
@@ -198,6 +198,48 @@ export async function updateStaffAction(targetUserId: string, updates: { role?: 
     }
 
     revalidatePath('/admin/manager')
+    revalidatePath('/admin/members')
+    return { success: true }
+}
+
+export async function deleteMemberAction(targetUserId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: 'Unauthorized' }
+
+    const { data: profile } = await supabase.from('users').select('role').eq('id', user.id).single()
+    if (profile?.role !== 'ADMIN') return { success: false, error: 'Forbidden' }
+
+    // Use Admin Client to delete from auth.users (cascades to public.users)
+    const adminSupabase = await createAdminClient()
+    const { error } = await adminSupabase.auth.admin.deleteUser(targetUserId)
+
+    if (error) {
+        return { success: false, error: error.message }
+    }
+
+    revalidatePath('/admin/members')
+    revalidatePath('/admin/unregistered-members')
+    return { success: true }
+}
+
+export async function toggleMemberDisabledAction(targetUserId: string, disabled: boolean) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: 'Unauthorized' }
+
+    const { data: profile } = await supabase.from('users').select('role').eq('id', user.id).single()
+    if (profile?.role !== 'ADMIN') return { success: false, error: 'Forbidden' }
+
+    const { error } = await supabase
+        .from('users')
+        .update({ is_disabled: disabled })
+        .eq('id', targetUserId)
+
+    if (error) {
+        return { success: false, error: error.message }
+    }
+
     revalidatePath('/admin/members')
     return { success: true }
 }

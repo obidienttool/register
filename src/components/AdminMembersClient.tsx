@@ -3,9 +3,9 @@
 import { useState, useEffect, useTransition } from 'react'
 import Link from 'next/link'
 import { getStates, getLgas, getWards, getPollingUnits } from '@/app/actions/locations'
-import { getScopedMembers, verifyMemberAction, promoteMemberAction, exportMembersAction } from '@/app/actions/members'
+import { getScopedMembers, verifyMemberAction, promoteMemberAction, exportMembersAction, deleteMemberAction, toggleMemberDisabledAction } from '@/app/actions/members'
 import { ROLES } from '../utils/rbac'
-import { Check, ShieldAlert, BadgeInfo, Download, Settings, ChevronRight, MapPin, CheckCircle, Users } from 'lucide-react'
+import { Check, ShieldAlert, BadgeInfo, Download, Settings, ChevronRight, MapPin, CheckCircle, Users, Trash2, UserX, UserCheck } from 'lucide-react'
 
 type LocationOptions = { id: number; name: string }[]
 
@@ -178,6 +178,37 @@ export default function AdminMembersClient({ callerRole }: { callerRole: string 
         })
     }
 
+    const handleDelete = async (userId: string, name: string) => {
+        if (!confirm(`CRITICAL: Are you sure you want to PERMANENTLY DELETE ${name}? This action cannot be undone and will remove all their data.`)) return
+
+        startTransition(async () => {
+            setActionError(null)
+            const res = await deleteMemberAction(userId)
+            if (!res?.success) {
+                setActionError(res?.error || 'Deletion failed')
+            } else {
+                alert('User permanently deleted.')
+                fetchMembers()
+            }
+        })
+    }
+
+    const handleToggleDisabled = async (userId: string, currentStatus: boolean, name: string) => {
+        const action = currentStatus ? 'activate' : 'disable'
+        if (!confirm(`Are you sure you want to ${action} ${name}'s account?`)) return
+
+        startTransition(async () => {
+            setActionError(null)
+            const res = await toggleMemberDisabledAction(userId, !currentStatus)
+            if (!res?.success) {
+                setActionError(res?.error || 'Action failed')
+            } else {
+                alert(`User ${currentStatus ? 'activated' : 'disabled'} successfully.`)
+                fetchMembers()
+            }
+        })
+    }
+
     return (
         <div className="space-y-6">
             {/* Responsive Filters - Mobile First */}
@@ -320,12 +351,28 @@ export default function AdminMembersClient({ callerRole }: { callerRole: string 
                                                 </button>
                                             )}
                                             {member.verified && callerRole === 'ADMIN' && (
-                                                <button
-                                                    onClick={() => setPromotingUserId(member.id)}
-                                                    className="flex-1 border border-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs active:scale-95 transition"
-                                                >
-                                                    Manage Role
-                                                </button>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => setPromotingUserId(member.id)}
+                                                        className="flex-1 border border-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs active:scale-95 transition"
+                                                    >
+                                                        Role
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleToggleDisabled(member.id, !!member.is_disabled, member.full_name)}
+                                                        className={`p-2.5 rounded-xl border transition ${member.is_disabled ? 'bg-green-50 border-green-200 text-green-600' : 'bg-amber-50 border-amber-200 text-amber-600'}`}
+                                                        title={member.is_disabled ? 'Activate Account' : 'Disable Account'}
+                                                    >
+                                                        {member.is_disabled ? <UserCheck className="w-4 h-4" /> : <UserX className="w-4 h-4" />}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(member.id, member.full_name)}
+                                                        className="p-2.5 bg-red-50 border border-red-200 text-red-600 rounded-xl hover:bg-red-100 transition"
+                                                        title="Delete User"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
                                             )}
                                             {(callerRole === 'ADMIN' || callerRole === 'WARD_COORDINATOR') && member.polling_unit && (
                                                 <Link
@@ -440,6 +487,24 @@ export default function AdminMembersClient({ callerRole }: { callerRole: string 
                                                             </div>
                                                         )}
 
+                                                        {callerRole === 'ADMIN' && (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => handleToggleDisabled(member.id, !!member.is_disabled, member.full_name)}
+                                                                    className={`p-1.5 rounded-lg border transition ${member.is_disabled ? 'bg-green-50 border-green-200 text-green-600' : 'bg-amber-50 border-amber-200 text-amber-600'}`}
+                                                                    title={member.is_disabled ? 'Activate Account' : 'Disable Account'}
+                                                                >
+                                                                    {member.is_disabled ? <UserCheck className="w-3.5 h-3.5" /> : <UserX className="w-3.5 h-3.5" />}
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDelete(member.id, member.full_name)}
+                                                                    className="p-1.5 bg-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-100 transition"
+                                                                    title="Delete User"
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            </>
+                                                        )}
                                                         {member.polling_unit && (callerRole === 'ADMIN' || callerRole === 'WARD_COORDINATOR') && (
                                                             <Link
                                                                 href={`/admin/polling-units/${member.polling_unit_id}/team`}

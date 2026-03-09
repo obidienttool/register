@@ -22,13 +22,21 @@ export async function login(formData: FormData) {
 
     const supabase = await createClient()
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: { user }, error } = await supabase.auth.signInWithPassword({
         email: loginEmail,
         password,
     })
 
-    if (error) {
+    if (error || !user) {
         return redirect(`/login?message=${encodeURIComponent('Could not authenticate user. Please check your credentials.')}`)
+    }
+
+    // Check if user is disabled in public.users
+    const { data: profile } = await supabase.from('users').select('is_disabled').eq('id', user.id).single()
+
+    if (profile?.is_disabled) {
+        await supabase.auth.signOut()
+        return redirect(`/login?message=${encodeURIComponent('This account has been suspended. Please contact your coordinator or administrator.')}`)
     }
 
     return redirect('/dashboard')
